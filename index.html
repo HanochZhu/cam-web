@@ -68,7 +68,7 @@
       </h1>
 
       <p class="hero-subtitle fade-in-up">
-        终结全文件倾倒与跨会话失忆。代码图符号级精准切片，混合检索融合向量与 BM25，艾宾浩斯抗遗忘沉淀原子事实。为 Coding Agent 减少最高 <strong>98%</strong> 上下文 Token。
+        告别全文件倾倒与跨会话失忆。符号级精准切片，向量+BM25 混合召回，艾宾浩斯抗遗忘。为 Coding Agent 减少最高 <strong>98%</strong> 上下文 Token。
       </p>
 
       <div class="hero-cta-group fade-in-up">
@@ -97,7 +97,7 @@
             </svg>
             <span>一句话 Agent 自动安装（推荐）</span>
           </div>
-          <span class="install-box-desc">复制粘贴给 Cursor / Claude Code / Codex，Agent 自动完成建图与 MCP 配置</span>
+          <span class="install-box-desc">粘贴给 Cursor / Claude Code / Codex，Agent 自动安装、建图并配置 MCP</span>
         </div>
         <div class="install-prompt-box" data-copy-target="#agent-prompt-text" data-copy-msg="已复制 Agent 一句话安装提示词！">
           <div class="install-prompt-text" id="agent-prompt-text">
@@ -124,9 +124,9 @@
               <span class="terminal-dot green"></span>
             </div>
             <div class="terminal-title">
-              <span>传统 Coding Agent (grep + 整文件 read)</span>
+              <span>传统 Agent (grep + 整文件 read)</span>
             </div>
-            <span class="terminal-badge danger">消耗巨额 Token · 容易遗忘</span>
+            <span class="terminal-badge danger">Token 膨胀 · 跨会话失忆</span>
           </div>
           <div class="terminal-body">
             <div class="terminal-line">
@@ -134,28 +134,28 @@
               <span class="terminal-cmd">grep -rn "fuse_rrf" src/</span>
             </div>
             <div class="terminal-line">
-              <span class="terminal-comment"># 匹配到 14 个文件，不知道具体定义点与拓扑关系</span>
+              <span class="terminal-comment"># 匹配 14 个文件，缺乏调用拓扑</span>
             </div>
             <div class="terminal-line">
               <span class="terminal-prompt">$</span>
               <span class="terminal-cmd">cat src/memory/recall/mod.rs</span>
-              <span class="terminal-metric-pill pill-red">711 行整文件全量灌入上下文</span>
+              <span class="terminal-metric-pill pill-red">711 行整文件全量灌入</span>
             </div>
             <div class="terminal-line">
               <span class="terminal-prompt">$</span>
               <span class="terminal-cmd">cat src/memory/recall/fuse.rs</span>
-              <span class="terminal-metric-pill pill-red">1,200 行全部塞进窗口</span>
+              <span class="terminal-metric-pill pill-red">1,200 行再次塞进窗口</span>
             </div>
             <div class="terminal-line">
-              <span class="terminal-comment">⚠️ 单次任务消耗 63,000+ tokens，上下文窗口拥挤降智</span>
+              <span class="terminal-comment">⚠️ 单次任务消耗 63,000+ tokens，上下文迅速拥塞</span>
             </div>
             <div class="terminal-line">
-              <span class="terminal-comment">❌ 开启新对话后：所有排查成果全部丢失，重新扫一遍</span>
+              <span class="terminal-comment">❌ 新会话开启：排查成果全部丢失，从零再来</span>
             </div>
           </div>
           <div class="terminal-footer-summary">
-            <span style="color: var(--error);">总耗费: 63,076 tokens / 次</span>
-            <span style="color: var(--text-tertiary);">会话间持久度: 0%</span>
+            <span style="color: var(--error);">单次消耗: 63,076 tokens</span>
+            <span style="color: var(--text-tertiary);">会话持久度: 0%</span>
           </div>
         </div>
 
@@ -168,7 +168,7 @@
               <span class="terminal-dot green"></span>
             </div>
             <div class="terminal-title">
-              <span style="color: var(--accent);">cam 赋能的 Agent (代码图 + 记忆树)</span>
+              <span style="color: var(--accent);">cam 赋能 Agent (代码图 + 记忆树)</span>
             </div>
             <span class="terminal-badge success">减少 98% Token · 永久记忆</span>
           </div>
@@ -178,26 +178,26 @@
               <span class="terminal-cmd">cam recall "how does hybrid recall fuse BM25 and vectors"</span>
             </div>
             <div class="terminal-line">
-              <span class="terminal-comment">⚡ [Hit RRF 1.98] 秒级命中已沉淀方案，无需反复猜测</span>
+              <span class="terminal-comment">⚡ 命中沉淀方案 (RRF 1.98)，无需重复探索</span>
             </div>
             <div class="terminal-line">
               <span class="terminal-prompt">&gt;</span>
               <span class="terminal-cmd">cam read src/memory/recall/fuse.rs/fuse_rrf</span>
             </div>
             <div class="terminal-line">
-              <span class="terminal-metric-pill pill-green">虚拟路径外科手术读取：只返回该符号 32 行切片</span>
+              <span class="terminal-metric-pill pill-green">外科手术读取：只返回 32 行函数切片</span>
             </div>
             <div class="terminal-line">
               <span class="terminal-prompt">&gt;</span>
               <span class="terminal-cmd">cam ref fuse_rrf --dir in</span>
-              <span class="terminal-comment"># 一跳查询所有调用方</span>
+              <span class="terminal-comment"># 秒级获取调用拓扑</span>
             </div>
             <div class="terminal-line">
-              <span class="terminal-comment">✅ 任务完成后：cam add 写入原子事实，--link 关联知识图谱</span>
+              <span class="terminal-comment">✅ 沉淀原子事实，--link 关联知识图谱</span>
             </div>
           </div>
           <div class="terminal-footer-summary">
-            <span style="color: var(--success); font-weight: 700;">总耗费: 1,000 tokens (省 98.4%)</span>
+            <span style="color: var(--success); font-weight: 700;">单次耗费: 1,000 tokens (省 98.4%)</span>
             <span style="color: var(--accent); font-weight: 700;">持久化: 100% 本地 SQLite</span>
           </div>
         </div>
@@ -276,9 +276,9 @@
     <div class="container">
       <div class="section-header fade-in-up">
         <span class="section-eyebrow">Interactive Dual-Plane Playground</span>
-        <h2 class="section-title">cam 的双检索平面：代码图与记忆树</h2>
+        <h2 class="section-title">cam 双检索平面：代码图与记忆树</h2>
         <p class="section-subtitle">
-          同一个本地 Rust 二进制内提供两个检索平面。点击下方 Tab 亲自操作虚拟文件系统与混合召回打分器。
+          同一本地二进制下的双检索平面：代码拓扑理解与长期知识沉淀。
         </p>
       </div>
 
@@ -290,13 +290,13 @@
               <polyline points="16 18 22 12 16 6"></polyline>
               <polyline points="8 6 2 12 8 18"></polyline>
             </svg>
-            <span>平面一：代码图（Code Graph · 外科手术式读代码）</span>
+            <span>代码图 (Code Graph) · 按符号精准读</span>
           </button>
           <button class="playground-tab" data-plane-target="plane-memory-tree">
             <svg class="playground-tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
             </svg>
-            <span>平面二：记忆树（Memory Tree · 向量+BM25 RRF 混合召回）</span>
+            <span>记忆树 (Memory Tree) · 多路混合召回</span>
           </button>
         </div>
 
@@ -322,7 +322,7 @@
                 <span class="tree-badge">fn</span>
               </div>
               <div style="margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border-subtle); font-size: 0.76rem; color: var(--text-tertiary);">
-                💡 虚拟路径原理：<code>src/main.rs</code> 指向文件大纲，<code>src/main.rs/main</code> 直接精准指向函数实现，无需读取全文件。
+                💡 虚拟路径原理：<code>src/main.rs</code> 返回大纲；<code>src/main.rs/main</code> 直接返回函数源码切片。
               </div>
             </div>
 
@@ -415,45 +415,45 @@
     <div class="container">
       <div class="section-header fade-in-up">
         <span class="section-eyebrow">Standardized Agent Loop</span>
-        <h2 class="section-title">AI Coding Agent 的统一 4 步循环</h2>
+        <h2 class="section-title">AI Coding Agent 的 4 步无损工作流</h2>
         <p class="section-subtitle">
-          无论是 Cursor、Claude Code 还是轻量 Subagent，执行任何编码任务均遵循无损记忆闭环。
+          从探索到沉淀，全链路形成标准化记忆闭环。
         </p>
       </div>
 
       <div class="workflow-grid fade-in-up">
         <div class="workflow-step-card">
           <div class="step-number">01</div>
-          <h3 class="step-title">先 Recall 查记忆</h3>
+          <h3 class="step-title">先查记忆 (Recall)</h3>
           <p class="step-desc">
-            探索代码前，把问题翻译成一句英文调用 <code>cam_recall</code>。若命中历史已沉淀方案且为 latest，直接复用，杜绝重复排查。
+            探索前先问 cam。命中 <code>latest</code> 记忆直接复用，杜绝重复排查。
           </p>
           <div class="step-command">cam recall "&lt;query&gt;"</div>
         </div>
 
         <div class="workflow-step-card">
           <div class="step-number">02</div>
-          <h3 class="step-title">确认已建图</h3>
+          <h3 class="step-title">确认建图 (Index)</h3>
           <p class="step-desc">
-            若提示 not_indexed，在项目根执行一次 <code>cam index</code>，tree-sitter 将自动解析函数、结构体、类与一跳调用边。
+            提示 <code>not_indexed</code> 时，执行一次 <code>cam index</code> 完成符号与调用边建图。
           </p>
           <div class="step-command">cam index</div>
         </div>
 
         <div class="workflow-step-card">
           <div class="step-number">03</div>
-          <h3 class="step-title">按图索骥精准读</h3>
+          <h3 class="step-title">精准切片 (Read & Ref)</h3>
           <p class="step-desc">
-            记忆未命中时，通过 <code>ls</code> 或 <code>find</code> 锁定符号，使用 <code>read</code> 获取该符号切片，用 <code>ref</code> 追溯调用链路。
+            未命中时用 <code>find</code> 搜符号，<code>read</code> 读切片，<code>ref</code> 追溯调用链路。
           </p>
           <div class="step-command">cam read file/symbol</div>
         </div>
 
         <div class="workflow-step-card">
           <div class="step-number">04</div>
-          <h3 class="step-title">原子事实写回</h3>
+          <h3 class="step-title">原子写回 (Add & Link)</h3>
           <p class="step-desc">
-            问题解决后，提取原子事实通过 <code>add</code> 记录关键方案（一记忆一事实）。相关事实用 <code>--link</code> 织成知识图谱。
+            解完后一条记忆存一条原子事实，用 <code>--link</code> 关联知识网络。
           </p>
           <div class="step-command">cam add --summary "..."</div>
         </div>
@@ -463,7 +463,7 @@
       <div class="arch-diagram-wrapper fade-in-up">
         <h3 style="font-size: 1.3rem; margin-bottom: 20px;">主 Agent 与 Subagent 双门并立架构</h3>
         <p style="color: var(--text-secondary); max-width: 700px; margin: 0 auto 30px auto; font-size: 0.92rem;">
-          主 Agent 通过 <strong>MCP stdio</strong> 调用工具；无法继承 MCP 的 Subagent 直接在终端跑 <strong>CLI</strong>。两者共享本地 <code>.cam/cam.db</code>，彻底解决多智能体协作断层。
+          主 Agent 调 <strong>MCP</strong>，Subagent 调 <strong>CLI</strong>。共享本地 <code>.cam/cam.db</code>，彻底打破多智能体协作壁垒。
         </p>
         <img src="docs/images/how-it-works.zh.svg" alt="cam 原理架构图" class="arch-visual-img">
       </div>
@@ -475,9 +475,9 @@
     <div class="container">
       <div class="section-header fade-in-up">
         <span class="section-eyebrow">Core Capabilities</span>
-        <h2 class="section-title">专为 AI Agent 严苛设计的六大杀手级特性</h2>
+        <h2 class="section-title">专为 AI Agent 量身打造的六大能力</h2>
         <p class="section-subtitle">
-          不妥协的工程质量，将代码拓扑理解与长效会话记忆压缩进 10MB 单一本地二进制。
+          代码拓扑与长效记忆，融于 10MB 单一本地 Rust 二进制。
         </p>
       </div>
 
@@ -492,7 +492,7 @@
           </div>
           <h3 class="bento-title">100% 本地与隐私安全</h3>
           <p class="bento-desc">
-            零外部 API Key，零代码外泄风险。嵌入模型（model2vec）在本地推理，代码图与记忆全部保存在项目内部的 SQLite（<code>.cam/cam.db</code>）。
+            零外部 API Key，零代码外泄。本地嵌入模型推理，图与记忆全存在项目内 <code>.cam/cam.db</code>。
           </p>
           <div class="bento-visual-preview">
             <span>$0 Cloud API Cost · 100% On-Device</span>
@@ -510,13 +510,13 @@
               <polyline points="10 9 9 9 8 9"></polyline>
             </svg>
           </div>
-          <h3 class="bento-title">虚拟路径外科手术读取 (Surgical Read)</h3>
+          <h3 class="bento-title">虚拟路径外科手术读取</h3>
           <p class="bento-desc">
-            告别 3000 行文件的整篇倾倒。<code>src/main.rs/main</code> 直接指向该函数切片；<code>cam ref symbol --dir in|out</code> 秒查一跳上下游。在 DeepSeek 代码评测中减少 <strong>98% Token 消耗</strong>。
+            告别整文件倾倒。<code>file/symbol</code> 精准取函数切片，<code>cam ref</code> 秒查一跳调用。评测实测减少 98% Token。
           </p>
           <div class="bento-visual-preview">
             <span style="color: var(--accent);">cam read src/main.rs/main</span>
-            <span style="color: var(--text-tertiary); margin-left: 10px;">➔ 只返回 24 行函数切片而非 2,800 行整文件</span>
+            <span style="color: var(--text-tertiary); margin-left: 10px;">➔ 仅返回 24 行切片而非 2,800 行整文件</span>
           </div>
         </div>
 
@@ -533,7 +533,7 @@
           </div>
           <h3 class="bento-title">原子事实与知识图谱连接</h3>
           <p class="bento-desc">
-            一条记忆严格存储一条原子事实，避免单条记忆信息过载。多个事实之间用 <code>--link</code> 建立知识图谱边，<code>--parent</code> 建立结构层级，<code>--supersedes</code> 建立线性修订版本链。
+            单条记忆只存一个原子事实。<code>--link</code> 织成知识网，<code>--parent</code> 结构分层，<code>--supersedes</code> 线性版本替代。
           </p>
           <div class="bento-visual-preview">
             <span>cam add --summary "..." --link ID_1 --link ID_2</span>
@@ -550,7 +550,7 @@
           </div>
           <h3 class="bento-title">艾宾浩斯抗遗忘衰减曲线</h3>
           <p class="bento-desc">
-            基于艾宾浩斯记忆模型计算保留率 \(R = e^{-t / S}\)，温和调节召回打分（幅度 \(\le 10\%\)）。每次真实命中强化稳定性（\(S \times 1.7\)）。记忆从不硬删除，过期条目标记为 <code>needs_update</code>。
+            保留率 \(R = e^{-t / S}\) 温和调权（\(\le 10\%\)）。每次命中稳定性 \(\times 1.7\)。永不硬删，遗忘区标记 <code>needs_update</code>。
           </p>
           <div class="bento-visual-preview">
             <span>Score = Relevance × (0.9 + 0.1 × R)</span>
@@ -565,9 +565,9 @@
               <line x1="12" y1="19" x2="20" y2="19"></line>
             </svg>
           </div>
-          <h3 class="bento-title">MCP + CLI 双接口并立架构</h3>
+          <h3 class="bento-title">MCP + CLI 双门并立架构</h3>
           <p class="bento-desc">
-            大多数宿主（Cursor Task/explore、Claude Code Bash）不会把 MCP 工具传递给委派子进程。cam 提供主 Agent 专属 MCP 工具与 Subagent 专属 <code>cam --json</code> 命令行，打破智能体协作壁垒。
+            主 Agent 调 MCP 工具，Subagent 在终端调 <code>cam --json</code>。彻底解决子智能体无法继承 MCP 的通病。
           </p>
           <div class="bento-visual-preview">
             <span>Main Agent: cam mcp (JSON-RPC)  |  Subagent: cam --json</span>
@@ -583,7 +583,7 @@
           </div>
           <h3 class="bento-title">增量哈希同步与实时监听</h3>
           <p class="bento-desc">
-            <code>cam sync</code> 基于内容哈希仅增量重建改动文件。<code>cam watch</code> 在后台监听源码变动，保存文件即自动增量同步代码图。
+            <code>cam sync</code> 基于内容哈希增量更新；<code>cam watch</code> 后台监听源码变动，保存文件即自动增量同步。
           </p>
           <div class="bento-visual-preview">
             <span>cam watch --debounce-ms 300</span>
@@ -600,7 +600,7 @@
         <span class="section-eyebrow">Rigorous Benchmarks</span>
         <h2 class="section-title">严苛对标评测：数据说明一切</h2>
         <p class="section-subtitle">
-          代码图与记忆树在相同权威语料上与开源最顶尖系统实测对照。
+          在相同权威公开语料上对照测试，数据验证真实收益。
         </p>
       </div>
 
@@ -677,7 +677,7 @@
             </div>
             <input type="range" class="calc-range-slider" id="calc-turn-slider" min="10" max="300" step="10" value="50">
             <p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6;">
-              拖动滑块计算在你的真实日常开发场景下，使用 <code>cam</code> 替代传统全文件倾倒预计可为你节省的 Token 与 API 账单。
+              拖动滑块估算使用 cam 替代传统全文件倾倒所节省的 Token 与 API 账单。
             </p>
           </div>
 
@@ -711,7 +711,7 @@
         <span class="section-eyebrow">Universal IDE Support</span>
         <h2 class="section-title">全宿主即插即用：一键获取接入配置</h2>
         <p class="section-subtitle">
-          原生支持 Cursor、Claude Code、Windsurf、Codex、VS Code Copilot 与 JetBrains。
+          原生支持主流 AI 编辑器与终端智能体。
         </p>
       </div>
 
@@ -798,13 +798,13 @@ cam --json --project /path/to/repo &lt;command&gt;</code></pre>
       <div class="faq-grid fade-in-up">
         <div class="faq-card open">
           <div class="faq-question">
-            <span>cam 与 Mem0、Zep、Letta 等记忆框架有何本质不同？</span>
+            <span>cam 与通用记忆框架（Mem0、Letta）有何不同？</span>
             <svg class="faq-toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
               <polyline points="6 9 12 15 18 9"></polyline>
             </svg>
           </div>
           <div class="faq-answer">
-            Mem0、Zep 等通用对话框架针对日常聊天日志与社交上下文设计；而 <strong>cam 专为代码场景定制</strong>。cam 拥有由 tree-sitter 驱动的代码图（精确到符号切片与 1-hop 调用边），记忆存储与代码图共用同一二进制和本地 SQLite，且专为编程中的“原子事实”与“线性修订链”设计，无需部署外部云服务或 Python 重型常驻服务。
+            通用对话框架面向日常聊天日志；<strong>cam 专为代码场景定制</strong>。内置 tree-sitter 代码图（支持符号切片与 1-hop 调用边），记忆与代码图共用本地 SQLite，专为编程原子事实与线性修订链设计，无需云端依赖或 Python 常驻服务。
           </div>
         </div>
 
@@ -816,19 +816,19 @@ cam --json --project /path/to/repo &lt;command&gt;</code></pre>
             </svg>
           </div>
           <div class="faq-answer">
-            在 Cursor、Claude Code 等 IDE 中，当主智能体委派子任务（例如 Cursor 的 <code>Task</code> / <code>explore</code> 或 Claude Code 的 Bash 子会话）时，绝大多数宿主<strong>不会把 MCP 工具挂载给子进程</strong>。很多基于纯 MCP 的方案在子任务中立刻失灵。cam 采用双接口设计：主 Agent 调 MCP，Subagent 执行 <code>cam --json</code>，两者读写相同的 <code>.cam/cam.db</code>，保证全链路能力无死角。
+            在 Cursor、Claude Code 等宿主中，主 Agent 委派子任务（Task/explore 或 Bash）时通常<strong>不向子进程传递 MCP</strong>。cam 提供双接口：主 Agent 调 MCP，Subagent 跑 <code>cam --json</code>，两者共享本地 <code>.cam/cam.db</code>，全链路无缝衔接。
           </div>
         </div>
 
         <div class="faq-card">
           <div class="faq-question">
-            <span>离线环境下可以运行 cam 吗？</span>
+            <span>纯离线断网环境下可以使用吗？</span>
             <svg class="faq-toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
               <polyline points="6 9 12 15 18 9"></polyline>
             </svg>
           </div>
           <div class="faq-answer">
-            完全可以。默认嵌入模型（<code>potion-multilingual-128M</code>）在初次联网时缓存至 <code>~/.cam/models/</code>；在纯内网或断网无模型环境中，cam 会<strong>自动平滑回退到词面 hash embedder</strong>，并结合原生 BM25 分词继续提供极高精度的混合检索，无需连外网。
+            完全可以。无网络或无预训练模型时，cam 会<strong>自动平滑回退到词面 hash embedder</strong>，结合标识符感知 BM25 提供高精度的混合检索，零网络依赖。
           </div>
         </div>
 
@@ -840,7 +840,7 @@ cam --json --project /path/to/repo &lt;command&gt;</code></pre>
             </svg>
           </div>
           <div class="faq-answer">
-            虚拟路径是 cam 独创的代码寻址机制。对于文件 <code>src/main.rs</code>，使用 <code>cam read src/main.rs</code> 仅返回该文件的符号大纲；而 <code>src/main.rs/main</code> 则是该文件内名为 <code>main</code> 的符号本身，只读取该函数的代码切片。这让 Agent 能像翻阅目录一样浏览代码，避免在上下文中加载大量无关实现。
+            cam 独创的代码寻址机制。例如 <code>src/main.rs</code> 仅返回大纲；<code>src/main.rs/main</code> 精确返回该函数的源码切片。让 Agent 像查目录一样按需读代码，杜绝上下文浪费。
           </div>
         </div>
       </div>
@@ -851,9 +851,9 @@ cam --json --project /path/to/repo &lt;command&gt;</code></pre>
   <section class="cta-banner-section">
     <div class="container">
       <div class="cta-banner-card fade-in-up">
-        <h2 class="cta-title">准备好为你的 AI Agent 赋予真正的代码记忆了吗？</h2>
+        <h2 class="cta-title">立即为你的 AI Agent 接入本地代码记忆</h2>
         <p class="cta-desc">
-          立即通过 GitHub 安装 cam，体验外科手术式代码阅读与永久长效记忆。100% 本地开源，零 API 费用。
+          100% 本地开源，零 API 费用。体验外科手术式代码阅读与永久长效记忆。
         </p>
         <div class="hero-cta-group" style="margin-bottom: 0;">
           <a href="https://github.com/HanochZhu/codeagent_memory" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-lg">
