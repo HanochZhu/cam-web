@@ -55,6 +55,10 @@
   --radius-md: 10px;
   --radius-lg: 16px;
   --radius-xl: 24px;
+
+  /* Dynamic Mouse Coordinates for Spotlight */
+  --mouse-x: -999px;
+  --mouse-y: -999px;
 }
 
 /* Reset & Box Sizing */
