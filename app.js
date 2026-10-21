@@ -1,9 +1,13 @@
 /**
  * cam (CodeAgent Memory) Web Introduction Interactive Engine
  * Zero external dependencies, pure ES6+, 60fps performance
+ * Complete i18n support: en, zh, ja, ko, ar (with RTL)
  */
 
+let currentLang = 'zh';
+
 document.addEventListener('DOMContentLoaded', () => {
+  initI18n();
   initNavbarScroll();
   initSpotlightCards();
   initCopyButtons();
@@ -13,6 +17,172 @@ document.addEventListener('DOMContentLoaded', () => {
   initFaqAccordion();
   initScrollReveal();
 });
+
+/* ==========================================================================
+   0. Internationalization (i18n) Engine
+   ========================================================================== */
+function getCurrentDict() {
+  if (window.CAM_TRANSLATIONS && window.CAM_TRANSLATIONS[currentLang]) {
+    return window.CAM_TRANSLATIONS[currentLang];
+  }
+  return (window.CAM_TRANSLATIONS && window.CAM_TRANSLATIONS['zh']) || {};
+}
+
+function initI18n() {
+  const supported = ['en', 'zh', 'ja', 'ko', 'ar'];
+  const urlParams = new URLSearchParams(window.location.search);
+  const requestedLang = urlParams.get('lang');
+  const storedLang = localStorage.getItem('cam_lang');
+
+  let targetLang = 'zh';
+
+  if (requestedLang && supported.includes(requestedLang.toLowerCase())) {
+    targetLang = requestedLang.toLowerCase();
+  } else if (storedLang && supported.includes(storedLang.toLowerCase())) {
+    targetLang = storedLang.toLowerCase();
+  } else if (navigator.language) {
+    const nav = navigator.language.toLowerCase();
+    if (nav.startsWith('zh')) targetLang = 'zh';
+    else if (nav.startsWith('ja')) targetLang = 'ja';
+    else if (nav.startsWith('ko')) targetLang = 'ko';
+    else if (nav.startsWith('ar')) targetLang = 'ar';
+    else targetLang = 'en';
+  }
+
+  setLanguage(targetLang, false);
+
+  // Dropdown toggle
+  const wrapper = document.querySelector('.lang-selector-wrapper');
+  const menuBtn = document.getElementById('lang-menu-btn');
+  const optionBtns = document.querySelectorAll('.lang-option-btn');
+
+  if (menuBtn && wrapper) {
+    menuBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = wrapper.classList.toggle('open');
+      menuBtn.setAttribute('aria-expanded', isOpen);
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!wrapper.contains(e.target)) {
+        wrapper.classList.remove('open');
+        menuBtn.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && wrapper.classList.contains('open')) {
+        wrapper.classList.remove('open');
+        menuBtn.setAttribute('aria-expanded', 'false');
+        menuBtn.focus();
+      }
+    });
+  }
+
+  optionBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const lang = btn.dataset.lang;
+      if (lang && lang !== currentLang) {
+        setLanguage(lang, true);
+      }
+      if (wrapper) wrapper.classList.remove('open');
+      if (menuBtn) menuBtn.setAttribute('aria-expanded', 'false');
+    });
+  });
+
+  // Listen to browser popstate (e.g. back/forward navigation)
+  window.addEventListener('popstate', () => {
+    const p = new URLSearchParams(window.location.search);
+    const l = p.get('lang');
+    if (l && supported.includes(l.toLowerCase()) && l.toLowerCase() !== currentLang) {
+      setLanguage(l.toLowerCase(), false);
+    }
+  });
+}
+
+function setLanguage(lang, updateUrl = true) {
+  if (!window.CAM_TRANSLATIONS || !window.CAM_TRANSLATIONS[lang]) return;
+  currentLang = lang;
+  const dict = window.CAM_TRANSLATIONS[lang];
+
+  // 1. HTML attributes (lang & dir for RTL)
+  const isRtl = lang === 'ar';
+  document.documentElement.lang = (lang === 'zh') ? 'zh-CN' : lang;
+  document.documentElement.dir = isRtl ? 'rtl' : 'ltr';
+
+  // 2. Page Title & Meta
+  if (dict.page_title) document.title = dict.page_title;
+  const metaDesc = document.querySelector('meta[name="description"]');
+  if (metaDesc && dict.page_desc) metaDesc.setAttribute('content', dict.page_desc);
+
+  // 3. Text content replacement (data-i18n)
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.dataset.i18n;
+    if (dict[key] !== undefined) {
+      el.textContent = dict[key];
+    }
+  });
+
+  // 4. HTML content replacement (data-i18n-html)
+  document.querySelectorAll('[data-i18n-html]').forEach(el => {
+    const key = el.dataset.i18nHtml;
+    if (dict[key] !== undefined) {
+      el.innerHTML = dict[key];
+    }
+  });
+
+  // 5. Attribute replacement (data-i18n-attr="attr:key|attr2:key2")
+  document.querySelectorAll('[data-i18n-attr]').forEach(el => {
+    const mappings = el.dataset.i18nAttr.split('|');
+    mappings.forEach(m => {
+      const [attr, key] = m.split(':');
+      if (attr && key && dict[key] !== undefined) {
+        el.setAttribute(attr, dict[key]);
+      }
+    });
+  });
+
+  // 6. Architecture diagram & documentation links
+  const archImg = document.getElementById('arch-visual-img');
+  if (archImg) {
+    archImg.src = (lang === 'zh') ? 'docs/images/how-it-works.zh.svg' : 'docs/images/how-it-works.svg';
+  }
+
+  const agentsLink = document.getElementById('footer-link-agents');
+  if (agentsLink) {
+    agentsLink.href = (lang === 'zh')
+      ? 'https://github.com/HanochZhu/codeagent_memory/blob/main/docs/agents.zh.md'
+      : 'https://github.com/HanochZhu/codeagent_memory/blob/main/docs/agents.md';
+  }
+  const mcpLink = document.getElementById('footer-link-mcp');
+  if (mcpLink) {
+    mcpLink.href = (lang === 'zh')
+      ? 'https://github.com/HanochZhu/codeagent_memory/blob/main/docs/mcp.zh.md'
+      : 'https://github.com/HanochZhu/codeagent_memory/blob/main/docs/mcp.md';
+  }
+
+  // 7. Language Selector button label and active item
+  const currentLangText = document.getElementById('current-lang-text');
+  if (currentLangText && dict.current_lang_label) {
+    currentLangText.textContent = dict.current_lang_label;
+  }
+  document.querySelectorAll('.lang-option-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.lang === lang);
+  });
+
+  // 8. Refresh dynamic interactive components
+  refreshActiveGraphSlice();
+  refreshActiveIdeConfig();
+  if (typeof updateCalc === 'function') updateCalc();
+
+  // 9. URL sync & storage
+  localStorage.setItem('cam_lang', lang);
+  if (updateUrl) {
+    const url = new URL(window.location.href);
+    url.searchParams.set('lang', lang);
+    window.history.replaceState({}, '', url.toString());
+  }
+}
 
 /* ==========================================================================
    1. Navbar Scrolled State
@@ -55,7 +225,11 @@ function initSpotlightCards() {
 /* ==========================================================================
    3. Clipboard Copy & Toast Feedback
    ========================================================================== */
-function showToast(message = '已复制到剪贴板！') {
+function showToast(message) {
+  const dict = getCurrentDict();
+  const fallback = dict.toast_copied_generic || '已复制到剪贴板！';
+  const text = message || fallback;
+
   let toast = document.getElementById('global-toast');
   if (!toast) {
     toast = document.createElement('div');
@@ -68,7 +242,7 @@ function showToast(message = '已复制到剪贴板！') {
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent);">
       <polyline points="20 6 9 17 4 12"></polyline>
     </svg>
-    <span>${message}</span>
+    <span>${text}</span>
   `;
 
   toast.classList.add('show');
@@ -90,18 +264,28 @@ function initCopyButtons() {
         if (targetEl) textToCopy = targetEl.innerText || targetEl.textContent;
       }
 
+      const dict = getCurrentDict();
+      let copyMsg = btn.dataset.copyMsg;
+      if (btn.dataset.copyTarget === '#agent-prompt-text' && dict.toast_copied_prompt) {
+        copyMsg = dict.toast_copied_prompt;
+      } else if (btn.dataset.copyTarget === '#ide-config-json' && dict.toast_copied_json) {
+        copyMsg = dict.toast_copied_json;
+      } else if (btn.dataset.copyTarget === '#ide-config-subagent' && dict.toast_copied_subagent) {
+        copyMsg = dict.toast_copied_subagent;
+      }
+
       if (textToCopy) {
         navigator.clipboard.writeText(textToCopy.trim()).then(() => {
-          showToast(btn.dataset.copyMsg || '已复制到剪贴板！');
+          showToast(copyMsg);
         }).catch(() => {
-          fallbackCopyText(textToCopy);
+          fallbackCopyText(textToCopy, copyMsg);
         });
       }
     });
   });
 }
 
-function fallbackCopyText(text) {
+function fallbackCopyText(text, copyMsg) {
   const textArea = document.createElement('textarea');
   textArea.value = text;
   textArea.style.position = 'fixed';
@@ -111,7 +295,7 @@ function fallbackCopyText(text) {
   textArea.select();
   try {
     document.execCommand('copy');
-    showToast('已复制到剪贴板！');
+    showToast(copyMsg);
   } catch (err) {
     console.error('Copy fallback failed', err);
   }
@@ -119,7 +303,7 @@ function fallbackCopyText(text) {
 }
 
 /* ==========================================================================
-   4. Interactive Dual-Plane Playground (爆点 2)
+   4. Interactive Dual-Plane Playground
    ========================================================================== */
 const graphDemoData = {
   'main': {
@@ -202,6 +386,42 @@ const graphDemoData = {
   }
 };
 
+let currentSymbolKey = 'main';
+
+function refreshActiveGraphSlice() {
+  const dict = getCurrentDict();
+  const data = graphDemoData[currentSymbolKey];
+  if (!data) return;
+
+  const slicePath = document.getElementById('slice-path-display');
+  const sliceCode = document.getElementById('slice-code-display');
+  const sliceSurgicalTokens = document.getElementById('slice-tokens-surgical');
+  const sliceFullTokens = document.getElementById('slice-tokens-full');
+  const sliceSaved = document.getElementById('slice-saved-ratio');
+  const callersList = document.getElementById('slice-callers');
+
+  if (slicePath) slicePath.textContent = data.path;
+  if (sliceCode) sliceCode.textContent = data.code;
+
+  const surgicalSuffix = dict.slice_tokens_surgical_suffix || ' 行切片';
+  const fullSuffix = dict.slice_tokens_full_suffix || ' 行整文件';
+
+  if (sliceSurgicalTokens) sliceSurgicalTokens.textContent = `${data.tokensSurgical} tokens (${data.sliceLines}${surgicalSuffix})`;
+  if (sliceFullTokens) sliceFullTokens.textContent = `${data.tokensFull} tokens (${data.fileTotalLines}${fullSuffix})`;
+
+  if (sliceSaved) {
+    if (dict.slice_saved_ratio) {
+      sliceSaved.textContent = dict.slice_saved_ratio.replace('94.6%', data.savedPercent);
+    } else {
+      sliceSaved.textContent = `节省 ${data.savedPercent} Token`;
+    }
+  }
+
+  if (callersList) {
+    callersList.innerHTML = data.callers.map(c => `<span class="tree-badge">${c}</span>`).join(' ');
+  }
+}
+
 const memoryDemoQueries = {
   'hybrid': {
     query: 'how does hybrid recall fuse BM25 and vectors',
@@ -260,6 +480,43 @@ const memoryDemoQueries = {
   }
 };
 
+function renderMemoryResults(key) {
+  const dict = getCurrentDict();
+  const data = memoryDemoQueries[key] || memoryDemoQueries['hybrid'];
+  const queryInput = document.getElementById('mem-query-input');
+  const resultsContainer = document.getElementById('mem-results-container');
+
+  if (queryInput) queryInput.value = data.query;
+
+  const rrfLabel = dict.mem_score_rrf_label || 'RRF 融合分: ';
+  const vecLabel = dict.mem_score_vec_label || '向量分: ';
+  const bm25Label = dict.mem_score_bm25_label || 'BM25 分: ';
+  const retentionLabel = dict.mem_score_retention_label || '保留率 R: ';
+
+  if (resultsContainer) {
+    resultsContainer.innerHTML = data.results.map(r => `
+      <div class="memory-card">
+        <div class="memory-card-header">
+          <span class="memory-id">${r.id}</span>
+          <div style="display: flex; gap: 8px; align-items: center;">
+            <span class="terminal-badge success">${r.status}</span>
+            <span class="memory-score-tag">${rrfLabel}${r.score}</span>
+          </div>
+        </div>
+        <div class="memory-summary">${r.summary}</div>
+        <div class="memory-body">${r.body}</div>
+        <div class="memory-meta-footer">
+          <span>${vecLabel}${r.vecScore}</span>
+          <span>·</span>
+          <span>${bm25Label}${r.bm25Score}</span>
+          <span>·</span>
+          <span>${retentionLabel}${r.retention}</span>
+        </div>
+      </div>
+    `).join('');
+  }
+}
+
 function initDualPlanePlayground() {
   // Tab switcher
   const tabs = document.querySelectorAll('.playground-tab');
@@ -276,67 +533,22 @@ function initDualPlanePlayground() {
     });
   });
 
-  // Plane 1: Code Graph Explorer Nodes
+  // Tree nodes
   const treeNodes = document.querySelectorAll('.tree-node-item');
-  const slicePath = document.getElementById('slice-path-display');
-  const sliceCode = document.getElementById('slice-code-display');
-  const sliceSurgicalTokens = document.getElementById('slice-tokens-surgical');
-  const sliceFullTokens = document.getElementById('slice-tokens-full');
-  const sliceSaved = document.getElementById('slice-saved-ratio');
-  const callersList = document.getElementById('slice-callers');
-
   treeNodes.forEach(node => {
     node.addEventListener('click', () => {
       treeNodes.forEach(n => n.classList.remove('selected'));
       node.classList.add('selected');
 
-      const key = node.dataset.symbolKey;
-      const data = graphDemoData[key];
-      if (!data) return;
-
-      if (slicePath) slicePath.textContent = data.path;
-      if (sliceCode) sliceCode.textContent = data.code;
-      if (sliceSurgicalTokens) sliceSurgicalTokens.textContent = `${data.tokensSurgical} tokens (${data.sliceLines} 行切片)`;
-      if (sliceFullTokens) sliceFullTokens.textContent = `${data.tokensFull} tokens (${data.fileTotalLines} 行整文件)`;
-      if (sliceSaved) sliceSaved.textContent = `节省 ${data.savedPercent} Token`;
-      if (callersList) {
-        callersList.innerHTML = data.callers.map(c => `<span class="tree-badge">${c}</span>`).join(' ');
-      }
+      currentSymbolKey = node.dataset.symbolKey;
+      refreshActiveGraphSlice();
     });
   });
 
-  // Plane 2: Memory Query Simulator
+  // Memory query simulator
   const queryInput = document.getElementById('mem-query-input');
   const queryChips = document.querySelectorAll('.sample-chip');
-  const resultsContainer = document.getElementById('mem-results-container');
-
-  function renderMemoryResults(key) {
-    const data = memoryDemoQueries[key] || memoryDemoQueries['hybrid'];
-    if (queryInput) queryInput.value = data.query;
-
-    if (resultsContainer) {
-      resultsContainer.innerHTML = data.results.map(r => `
-        <div class="memory-card">
-          <div class="memory-card-header">
-            <span class="memory-id">${r.id}</span>
-            <div style="display: flex; gap: 8px; align-items: center;">
-              <span class="terminal-badge success">${r.status}</span>
-              <span class="memory-score-tag">RRF 融合分: ${r.score}</span>
-            </div>
-          </div>
-          <div class="memory-summary">${r.summary}</div>
-          <div class="memory-body">${r.body}</div>
-          <div class="memory-meta-footer">
-            <span>向量分: ${r.vecScore}</span>
-            <span>·</span>
-            <span>BM25 分: ${r.bm25Score}</span>
-            <span>·</span>
-            <span>保留率 R: ${r.retention}</span>
-          </div>
-        </div>
-      `).join('');
-    }
-  }
+  const runBtn = document.getElementById('btn-run-query');
 
   queryChips.forEach(chip => {
     chip.addEventListener('click', () => {
@@ -344,6 +556,21 @@ function initDualPlanePlayground() {
       renderMemoryResults(key);
     });
   });
+
+  if (runBtn) {
+    runBtn.addEventListener('click', () => {
+      if (queryInput) {
+        const val = queryInput.value.toLowerCase();
+        if (val.includes('ebbinghaus') || val.includes('decay')) {
+          renderMemoryResults('ebbinghaus');
+        } else if (val.includes('subagent') || val.includes('cli')) {
+          renderMemoryResults('subagent');
+        } else {
+          renderMemoryResults('hybrid');
+        }
+      }
+    });
+  }
 
   if (queryInput) {
     queryInput.addEventListener('keydown', (e) => {
@@ -359,11 +586,17 @@ function initDualPlanePlayground() {
       }
     });
   }
+
+  // Initial render
+  refreshActiveGraphSlice();
+  renderMemoryResults('hybrid');
 }
 
 /* ==========================================================================
-   5. Interactive Token & Cost Savings Calculator (巧思 1)
+   5. Interactive Token & Cost Savings Calculator
    ========================================================================== */
+let updateCalc = () => {};
+
 function initSavingsCalculator() {
   const slider = document.getElementById('calc-turn-slider');
   const turnsDisplay = document.getElementById('calc-turns-val');
@@ -373,17 +606,15 @@ function initSavingsCalculator() {
 
   if (!slider) return;
 
-  function updateCalc() {
+  updateCalc = function() {
+    const dict = getCurrentDict();
     const turns = parseInt(slider.value, 10);
-    if (turnsDisplay) turnsDisplay.textContent = `${turns} 轮`;
+    const suffix = dict.calc_turns_suffix || ' 轮';
+    if (turnsDisplay) turnsDisplay.textContent = `${turns}${suffix}`;
 
-    // Without cam: ~55,000 tokens dumped per turn (code grep/read + context history)
-    // With cam: ~1,500 tokens surgical read + recall
     // Tokens saved per turn ≈ 53,500
     const dailySaved = turns * 53500;
     const monthlyTokens = dailySaved * 30;
-    
-    // Average API cost: ~$3.00 / 1M tokens (blended input/output for Claude Sonnet 3.5 / GPT-4o)
     const monthlyDollars = (monthlyTokens / 1_000_000) * 3.0;
 
     if (dailyTokensDisplay) {
@@ -401,7 +632,7 @@ function initSavingsCalculator() {
     if (latencyDisplay) {
       latencyDisplay.textContent = `P95 ~5.2ms`;
     }
-  }
+  };
 
   slider.addEventListener('input', updateCalc);
   updateCalc();
@@ -413,7 +644,7 @@ function initSavingsCalculator() {
 const ideConfigs = {
   cursor: {
     name: 'Cursor',
-    configPath: '.cursor/mcp.json (或 ~/.cursor/mcp.json)',
+    configPath: '.cursor/mcp.json',
     mcpJson: `{
   "mcpServers": {
     "cam": {
@@ -421,13 +652,11 @@ const ideConfigs = {
       "args": ["mcp"]
     }
   }
-}`,
-    subagentPrompt: `Subagent (Task / explore) 无法继承 MCP，在终端中直接执行：\n\ncam --json --project /path/to/repo <command>`,
-    docHint: '在 Cursor Agent 中粘贴一句话安装 Prompt，即可全自动配置。'
+}`
   },
   claude: {
     name: 'Claude Code',
-    configPath: '.mcp.json (或 claude mcp add)',
+    configPath: '.mcp.json (or claude mcp add)',
     mcpJson: `{
   "mcpServers": {
     "cam": {
@@ -435,9 +664,7 @@ const ideConfigs = {
       "args": ["mcp"]
     }
   }
-}`,
-    subagentPrompt: `或者通过 CLI 注册：\nclaude mcp add cam -- cam mcp\n\nSubagent 执行：cam --json <command>`,
-    docHint: '原生支持 stdio JSON-RPC，一键即用。'
+}`
   },
   windsurf: {
     name: 'Windsurf',
@@ -449,22 +676,18 @@ const ideConfigs = {
       "args": ["mcp"]
     }
   }
-}`,
-    subagentPrompt: `Cascade 智能体调用 cam MCP；Shell 脚本调用 cam --json`,
-    docHint: '将配置填入 windsurf/mcp_config.json 即可生效。'
+}`
   },
   codex: {
     name: 'Codex',
     configPath: '~/.codex/config.toml',
     mcpJson: `[mcp_servers.cam]
 command = "cam"
-args = ["mcp"]`,
-    subagentPrompt: `codex exec 命令中调用：cam --json <command>`,
-    docHint: '使用 TOML 格式配置文件注册。'
+args = ["mcp"]`
   },
   vscode: {
     name: 'VS Code (Copilot / Cline / Continue)',
-    configPath: '.vscode/mcp.json 或 ~/.continue/config.yaml',
+    configPath: '.vscode/mcp.json',
     mcpJson: `{
   "mcpServers": {
     "cam": {
@@ -472,45 +695,64 @@ args = ["mcp"]`,
       "args": ["mcp"]
     }
   }
-}`,
-    subagentPrompt: `Cline / Continue 开启终端访问后，子脚本调用 cam --json`,
-    docHint: '与标准 MCP 客户端规范 100% 兼容。'
+}`
   },
   jetbrains: {
-    name: 'JetBrains (IntelliJ / RustRover / GoLand)',
-    configPath: 'AI Assistant → MCP 插件配置',
+    name: 'JetBrains (IntelliJ / RustRover)',
+    configPath: 'AI Assistant → MCP Settings',
     mcpJson: `{
   "name": "cam",
   "command": "cam",
   "args": ["mcp"]
-}`,
-    subagentPrompt: `内置终端中执行：cam index && cam recall "query"`,
-    docHint: '若 IDE PATH 环境变量未包含 cargo/bin，填写 cam 绝对路径。'
+}`
   }
 };
 
-function initIdeConfigurator() {
-  const tabBtns = document.querySelectorAll('.ide-tab-btn');
+let currentIdeKey = 'cursor';
+
+function refreshActiveIdeConfig() {
+  const dict = getCurrentDict();
+  const config = ideConfigs[currentIdeKey];
+  if (!config) return;
+
   const pathDisplay = document.getElementById('ide-config-path');
   const jsonDisplay = document.getElementById('ide-config-json');
   const subagentDisplay = document.getElementById('ide-config-subagent');
   const hintDisplay = document.getElementById('ide-config-hint');
+
+  if (pathDisplay) pathDisplay.textContent = config.configPath;
+  if (jsonDisplay) jsonDisplay.textContent = config.mcpJson;
+
+  const subagentKey = `ide_subagent_${currentIdeKey}`;
+  const hintKey = `ide_hint_${currentIdeKey}`;
+
+  if (subagentDisplay) {
+    if (dict[subagentKey]) {
+      subagentDisplay.textContent = dict[subagentKey];
+    } else {
+      subagentDisplay.textContent = `Subagent (Task / explore) runs cam --json in terminal:\n\ncam --json --project /path/to/repo <command>`;
+    }
+  }
+
+  if (hintDisplay && dict[hintKey]) {
+    hintDisplay.textContent = dict[hintKey];
+  }
+}
+
+function initIdeConfigurator() {
+  const tabBtns = document.querySelectorAll('.ide-tab-btn');
 
   tabBtns.forEach(btn => {
     btn.addEventListener('click', () => {
       tabBtns.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
 
-      const ideKey = btn.dataset.ideKey;
-      const config = ideConfigs[ideKey];
-      if (!config) return;
-
-      if (pathDisplay) pathDisplay.textContent = config.configPath;
-      if (jsonDisplay) jsonDisplay.textContent = config.mcpJson;
-      if (subagentDisplay) subagentDisplay.textContent = config.subagentPrompt;
-      if (hintDisplay) hintDisplay.textContent = config.docHint;
+      currentIdeKey = btn.dataset.ideKey;
+      refreshActiveIdeConfig();
     });
   });
+
+  refreshActiveIdeConfig();
 }
 
 /* ==========================================================================
@@ -525,7 +767,6 @@ function initFaqAccordion() {
 
     question.addEventListener('click', () => {
       const isOpen = card.classList.contains('open');
-      // Optional: close other cards
       faqCards.forEach(c => c.classList.remove('open'));
       if (!isOpen) {
         card.classList.add('open');

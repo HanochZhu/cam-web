@@ -20,6 +20,7 @@
   - **记忆树（Memory Tree）**：输入或点击示例问题，实时演示向量与 BM25 的 RRF 融合打分与艾宾浩斯记忆保留衰减曲线（$R = e^{-t/S}$）。
 - **Bento 微光跟踪光卡片**：100% 本地 SQLite、虚拟路径精准读取、原子事实知识图谱、艾宾浩斯抗遗忘、MCP+CLI 双接口架构、增量监听同步。
 - **宿主 IDE 专属一键装配面板**：针对 Cursor、Claude Code、Windsurf、Codex、VS Code Copilot 与 JetBrains 提供开箱即用的配置与 Subagent 终端指令。
+- **多语言国际化 (i18n)**：原生支持 English (en)、简体中文 (zh)、日本語 (ja)、한국어 (ko)、العربية (ar，含 RTL 排版)。支持 URL 查询参数（`?lang=xxx`）与右上角切换器随时无缝切换。
 - **Token 与成本节省计算器**：动态拖动滑块直观计算每日/每月节省的 Token 与 API 费用。
 
 ---
@@ -62,10 +63,11 @@ npx serve .
 cam-web/
 ├── index.html                  # 语义化响应式单页
 ├── styles.css                  # 严格遵循 DESIGN.md 的暗黑科技风设计规范
-├── app.js                      # 交互引擎（双平面游乐场、Spotlight 跟踪、Token 计算器）
+├── translations.js             # 5 种语言完整国际化字典 (en, zh, ja, ko, ar)
+├── app.js                      # 交互与 i18n 引擎（双平面游乐场、Spotlight、Token 计算器）
 ├── DESIGN.md                   # 完整的 9 章节 UI/UX 视觉与交互规范
 ├── assets/                     # 矢量 logo 与品牌图标
-├── docs/images/                # 架构原理 SVG 拓扑图
+├── docs/images/                # 架构原理 SVG 拓扑图 (中英双语)
 └── .github/workflows/deploy.yml # GitHub Pages 自动化发布 Action
 ```
 
